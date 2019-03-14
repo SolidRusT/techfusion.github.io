@@ -1,4 +1,6 @@
-## Passenger: Ruby on Rails example app
+# Technical Fusion Canada
+
+## techfusion.ca
 
 This is a Ruby on Rails hello world example app for [the Passenger application server](https://www.phusionpassenger.com/).
 
