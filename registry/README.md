@@ -1,25 +1,59 @@
-### Setup a registry
+# Setup a registry
+## Configure SSL
+### Recycle the cert from our NGINX gateway
+```bash
+mkdir -p certs
+sudo cp -r /etc/letsencrypt/archive/monitoring.techfusion.ca certs/
+sudo chown shaun:docker -R certs
+cp certs/monitoring.techfusion.ca/privkey1.pem certs/registry.key && \
+cat certs/monitoring.techfusion.ca/cert1.pem certs/monitoring.techfusion.ca/chain1.pem > certs/registry.crt
+```
+### distribute the cert and key to each host
+`scp haze:~/techfusion.ca/registry/certs/registry.* .`
+### Create /home/docker on each host
+```bash
+sudo mkdir -p /home/docker
+sudo mv registry.* /home/docker && \
+sudo chown root:docker -R /home/docker
+```
+### Set a password to the registry
+```bash
+sudo mkdir -p /mnt/registry
+sudo touch /mnt/registry/passfile
+sudo chown -R shaun:docker /mnt/registry
+```
+### Generate the password hash
+`docker run --entrypoint htpasswd registry:latest -Bbn techadmin techsite > /mnt/registry/passfile`
 
-From a manager node of the docker swarm:
+scp haze:/mnt/registry/passfile . && sudo mv passfile /mnt/registry/passfile && sudo chown -R root:docker /mnt/registry
 
+## Create the Registry service
+### Create on a swarm manager node
 ```bash
 docker service create \
   --name registry \
   --replicas-max-per-node 1 \
   --publish published=5000,target=5000 \
   --mount type=bind,source=/mnt/registry,destination=/var/lib/registry \
-  --replicas 2 \
-  registry:2
+  --mount=type=bind,src=/home/docker,dst=/certs \
+  -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 \
+  -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/registry.crt \
+  -e REGISTRY_HTTP_TLS_KEY=/certs/registry.key \
+  -e REGISTRY_AUTH=htpasswd \
+  -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
+  -e REGISTRY_AUTH_HTPASSWD_PATH=/var/lib/registry/passfile \
+  registry:latest
 ```
-#  --constraint 'node.labels.registry==true' \
 
-Change the number of replicas:
+### Change the number of replicas:
 
 ```bash
 docker service update \
-  --replicas 2 \
+  --replicas 3 \
   registry
 ```
+
+
 
 # TODO
 

@@ -72,3 +72,14 @@ sudo certbot --nginx
 /etc/nginx/nginx.conf
   client_max_body_size 0;
   server_names_hash_bucket_size 64;
+
+
+### Do a cert
+
+## do this on the gateway, using certbot
+```bash
+sudo add-apt-repository ppa:certbot/certbot
+sudo apt-get install certbot python-certbot-nginx
+sudo certbot --nginx
+sudo certbot renew --dry-run
+```
