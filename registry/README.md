@@ -28,14 +28,29 @@ sudo chown -R shaun:docker /mnt/registry
 scp haze:/mnt/registry/passfile . && sudo mv passfile /mnt/registry/passfile && sudo chown -R root:docker /mnt/registry
 
 ## Create the Registry service
-### Create on a swarm manager node
+
+```bash
+docker stack deploy --compose-file docker-compose.yml techfusion
+docker service update --replicas-max-per-node=1 techfusion_registry
+```
+
+### Change the number of replicas:
+```bash
+docker service update \
+  --replicas 1 \
+  registry
+```
+
+#### Legacy NO LONGER MAINTAINED
 ```bash
 docker service create \
-  --name registry \
+  --name techfusion_registry \
+  --replicas 1 \
   --replicas-max-per-node 1 \
   --publish published=5000,target=5000 \
-  --mount type=bind,source=/mnt/registry,destination=/var/lib/registry \
-  --mount=type=bind,src=/home/docker,dst=/certs \
+  --mount type=bind,source=/media/registry,destination=/var/lib/registry \
+  --mount=type=bind,src=/media/certs,dst=/certs \
+  --mount=type=bind,src=/media/certs/auth,dst=/auth \
   -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 \
   -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/registry.crt \
   -e REGISTRY_HTTP_TLS_KEY=/certs/registry.key \
@@ -45,50 +60,14 @@ docker service create \
   registry:latest
 ```
 
-### Change the number of replicas:
-
-```bash
-docker service update \
-  --replicas 3 \
-  registry
-```
-
-
-
-# TODO
+## TODO
 
 $ mkdir auth
 $ docker run \
   --entrypoint htpasswd \
   registry:2 -Bbn testuser testpassword > auth/htpasswd
 
-docker container stop registry
-
-docker run -d \
-  -p 5000:5000 \
-  --restart=always \
-  --name registry \
-  -v "$(pwd)"/auth:/auth \
-  -e "REGISTRY_AUTH=htpasswd" \
-  -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
-  -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
-  registry:2
-
 docker login registry.techfusion.ca
-
-## TODO - Example using compose
-registry:
-  restart: always
-  image: registry:2
-  ports:
-    - 5000:5000
-  environment:
-    REGISTRY_AUTH: htpasswd
-    REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
-    REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
-  volumes:
-    - /path/data:/var/lib/registry
-
 
 ### Using the registry
 
@@ -99,8 +78,7 @@ docker push registry.techfusion.ca/debian
 docker image remove debian
 ```
 
-
-# S3 Permissions
+#### S3 Permissions
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -126,4 +104,3 @@ docker image remove debian
     }
   ]
 }
-

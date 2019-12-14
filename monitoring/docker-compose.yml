@@ -6,9 +6,24 @@ networks:
     attachable: true
 
 volumes:
-    prometheus: {}
-    grafana: {}
-    alertmanager: {}
+    prometheus:
+      driver: local
+      driver_opts:
+        type: none
+        o: bind
+        device: "/media/monitoring/prometheus"
+    grafana:
+      driver: local
+      driver_opts:
+        type: none
+        o: bind
+        device: "/media/monitoring/graphana"
+    alertmanager:
+      driver: local
+      driver_opts:
+        type: none
+        o: bind
+        device: "/media/monitoring/alertmanager"
 
 configs:
   caddy_config:
