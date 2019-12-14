@@ -93,7 +93,7 @@ docker swarm join --token SWMTKN-1-5nlp0hlpkg339r28gawpratr71nhhcirdh0dhuzcg2iqv
 ```bash
 sudo dpkg --add-architecture i386
 sudo apt-get update && sudo apt-get dist-upgrade
-sudo apt install build-essential libc6:i386 git wget curl net-tools
+sudo apt install build-essential libc6:i386 git wget curl net-tools libc-ares2
 ```
 
 ### generate link from http://www.nvidia.com/Download/index.aspx
