@@ -20,7 +20,7 @@ alias src='cd /media/source'
 
 ## Debian Buster steps
 
-text net-install with SSH and system tools only
+text-based net-install with SSH and system tools only
 
 ### Manual host machine preparation steps
 
@@ -53,20 +53,13 @@ ifconfig    # Get the new IP
 exit
 ```
 
-#### scp your keys over
+### Configure SSH keys
 
 SCP over the public SSH key to the new host
 
 ```bash
 ssh -tq <new_host> "mkdir .ssh"
 scp ~/.ssh/authorized_keys <new_host>:~/.ssh/`
-```
-### Configure SSH keys
-`scp ~/.ssh/authorized_keys <new_host>:~/.ssh`
-
-```bash
-mkdir -p ~/.ssh
-chmod 600 .ssh/authorized_keys
 ```
 
 ### Set the timezone (not required for official images)
@@ -198,14 +191,16 @@ echo " \
 sudo tee -a /etc/fstab
 
 # Automount like a boss
-sudo apt install cifs-utils
+sudo apt install -y cifs-utils
 sudo umount -a
 sudo mount -a
 ```
 
 `friend "echo \"*  *    * * *   root    mount -a\" | sudo tee -a /etc/crontab"`
 
-## Vbox tools
+## VirtualBox Guest Addtitions (OPTIONAL)
+
+If you are doing this in a VirtualBox guest only
 
 ### Install build tools and kernel headers
 
@@ -224,6 +219,52 @@ eject /dev/cdrom
 reboot
 ```
 
+## NVIDIA Swarm hosts configuration
+
+follow the NVIDIA build doc: ./nvidia-docker/README.md
+
+## Shell customizations
+
+Enable banners and color outputs
+
+`sudo apt install -y figlet lolcat`
+
+Based on what was mounted in the previous step, add something like this to your local `.bashrc`
+
+`source /media/source/.bashrc`
+
+This will enable you to control the swarm host shell defaults from a single place.
+
+do this in `/etc/skel` to automatically apply for newly created users
+
+## fake DNS
+
+### Wipe existing manual entries (optional)
+
+For example, to wipe all the `10.2.5.x` IP addresses, use:
+
+`sudo sed -i.bak '/10.2.5/d' /etc/hosts`
+
+### Create a global hosts file (optional - only for lazy / temporary DNS)
+
+Modify the provided `hosts` file and add in a list of hosts with a unique comment, so that `sed` can hook into it for easy updates later
+
+```bash
+cat "
+10.2.5.22       poseidon                  # techfusion managed
+10.2.5.201      monitoring.techfusion.ca  # techfusion managed
+10.2.5.201      registry.techfusion.ca    # techfusion managed
+" > /media/source/hosts
+```
+
+### Push the changes
+
+```text
+sudo sed -i.bak '/10.2.5/d' /etc/hosts
+sudo sed -i.bak '/techfusion/d' /etc/hosts
+cat /media/source/hosts | sudo tee -a /etc/hosts
+```
+
 ## Configure Docker swarm
 ### Slave Node
 #### Join the swarm
@@ -239,23 +280,5 @@ docker swarm join-token manager
 #### Initialize the swarm
 `docker swarm init --advertise-addr <IP>:<PORT>`
 
-### Color prompt
 
-ninja the `.bashrc` on debian, to uncomment `force_color_prompt=yes`
-
-do this in `/etc/skel` to apply for newly created users
-
-
-### fake DNS
-
-10.2.5.201      haze monitoring.techfusion.ca registry.techfusion.ca
-10.2.5.205      godberry-1
-10.2.5.122      poseidon-1
-10.2.5.22       poseidon
-
-10.2.5.129      kolvicy-1
-10.2.5.175      blaze
-10.2.5.167      hades-1
-10.2.5.61       kush
-10.2.5.43       sativa
 

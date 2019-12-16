@@ -79,6 +79,10 @@ docker image remove debian
 ```
 
 #### S3 Permissions
+
+We store these in the cloud, even for dev.
+
+```json
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -104,3 +108,4 @@ docker image remove debian
     }
   ]
 }
+```

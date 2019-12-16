@@ -1,106 +1,20 @@
 # Debian Buster GPU Docker Host configuration
 
-## Installing Docker
-
-Debian minimal install with SSH and system tools
-```
-Login as root
-```
-### Refresh repo cache and install some tools
-apt update && apt install git sudo net-tools
-
-### add yourself to sudo
-```
-visudo      # shaun         ALL=(ALL) NOPASSWD:ALL
-exit
-```
-
-```
-Login as a user
-```
-
-### scp your keys over
-```bash
-mkdir .ssh
-mv authorized_keys .ssh/authorized_keys
-chmod 600 .ssh/authorized_keys
-```
-
-### Install some required packages first
-```bash
-sudo apt update
-sudo apt install -y \
-     apt-transport-https \
-     ca-certificates \
-     curl \
-     gnupg2 \
-     software-properties-common
-
-# Get the Docker signing key for packages
-curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | sudo apt-key add -
-
-# rasbian uses 'arch=armhf'
-echo "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
-     $(lsb_release -cs) stable" | \
-    sudo tee /etc/apt/sources.list.d/docker.list
-
-# Install Docker
-# The aufs package, part of the "recommended" packages, won't install on Buster just yet, because of missing pre-compiled kernel modules.
-# We can work around that issue by using "--no-install-recommends"
-sudo apt update
-sudo apt install -y --no-install-recommends \
-    docker-ce \
-    cgroupfs-mount
-
-sudo systemctl enable docker
-sudo systemctl start docker
-
-# make yourself a member of the docker group
-# logout
-# login
-
-# Install required packages
-sudo apt update
-sudo apt install -y python python-pip libffi-dev python-backports.ssl-match-hostname
-
-# Install Docker Compose from pip
-# This might take a while
-sudo pip install docker-compose
-```
-
-## Slave Node
-
-### Join the swarm
-```
-#docker swarm join --token SWMTKN-1-5nlp0hlpkg339r28gawpratr71nhhcirdh0dhuzcg2iqv7e0v1-byacri2ts9b1l8do1i1l3lras 10.2.5.201:2377
-docker swarm join --token SWMTKN-1-5nlp0hlpkg339r28gawpratr71nhhcirdh0dhuzcg2iqv7e0v1-4607kovldin749eyuswqnhgy7 10.2.5.167:2377
-```
-
-## Master Node
-
-### Initialize the swarm
-`docker swarm init`
-
-#### References
-- https://github.com/vegasbrianc/prometheus
-- https://github.com/RiFi2k/dockerize-your-dev
-
-
 ## Installing NVIDIA support for Docker
 
 ### Install some packages
 
 ```bash
 sudo dpkg --add-architecture i386
-sudo apt-get update && sudo apt-get dist-upgrade
-sudo apt install build-essential libc6:i386 git wget curl net-tools libc-ares2
+sudo apt-get update && sudo apt-get dist-upgrade -y
+sudo apt install -y build-essential libc6:i386 git wget curl net-tools libc-ares2
 ```
 
 ### generate link from http://www.nvidia.com/Download/index.aspx
 
 `wget http://us.download.nvidia.com/XFree86/Linux-x86_64/440.44/NVIDIA-Linux-x86_64-440.44.run`
 
-### Disable the nouveu driver and reboot
+### Disable the nouveau driver and reboot
 
 ```bash
 sudo bash -c "echo blacklist nouveau > /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
@@ -119,20 +33,20 @@ Install the currently running kernel's headers
 
 `sudo apt install linux-headers-$(uname -r)`
 
-### install the core X server, for GPU clock and power management
+### install the core X server, for GPU clock and power management (nvidia-settings)
 
 `sudo apt install pkg-config xorg libgtk-3-0`
 
 #### Install for systems with Secure Boot disabled in UEFI BIOS, or if not using UEFI
-```
-sudo bash NVIDIA-Linux-x86_64-440.44.run
-```
+
+`sudo bash NVIDIA-Linux-x86_64-440.44.run`
+
 Choose "No" for signing the kernel module
 
 #### Install for systems with Secure Boot enabled in UEFI BIOS.
-```
-sudo bash NVIDIA-Linux-x86_64-440.44.run
-```
+
+`sudo bash NVIDIA-Linux-x86_64-440.44.run`
+
 "Continue Installation" -> "Sign the kernel module" -> "Generate a new key pair" -> "No" (don't delete the key
 
 Take note of the cert file name and path, ie: `/usr/share/nvidia/nvidia-modsign-crt-65E0FA91.der`.
@@ -182,24 +96,34 @@ Notice how there is nothing running on X:
 
 ```
 
-### let's configure some fake screens and start X
+### Configure some fake X screens
 
-### lets make this run on boot
-add this to the bottom of your `/etc/rc.local`
+modify the example `xorg.conf` file to reflect your actual hardware. Specifically, the number of cards, and the PCI BUS IDs. Configuring more cards than you have installed does not seem to cause any problems, so using the example `xorg.conf` the way it is should work as long as the entries include the PCI BUS IDs of your cards.
+
+modify the example `rc.local` file to reflect your desired power limit and default fan speed.
+
+from your management host, or where you have this repo checked out:
+
+```bash
+scp rc.local <new_host>:~/
+scp xorg.conf <new_host>:~/
 ```
-X :0 &
-sleep 10
-export DISPLAY=:0
 
-nvidia-smi -pm ENABLED | sed "s/^/  /gi"
+### Make the core X server process run on boot
 
-exit 0
+```bash
+sudo rm /etc/rc.local && \
+  sudo touch /etc/rc.local
+cat rc.local | sudo tee -a /etc/rc.local
+sudo chmod +x /etc/rc.local
 ```
-### Make sure it is executable
-`sudo chmod +x /etc/rc.local`
-### Reboot and test
+
+#### Reboot and test
+
 `sudo reboot`
-wait a bit and SSH back in
+
+wait a bit, then SSH back in and check if X is running on NVIDIA
+
 `nvidia-smi`
 
 ```
@@ -207,31 +131,83 @@ wait a bit and SSH back in
 | Processes:                                                       GPU Memory |
 |  GPU       PID   Type   Process name                             Usage      |
 |=============================================================================|
-|    0       908      G   /usr/lib/xorg/Xorg                            32MiB |
-|    0      1353      G   /usr/bin/gnome-shell                           6MiB |
+|    0       542      G   /usr/lib/xorg/Xorg                            22MiB |
 +-----------------------------------------------------------------------------+
 ```
 this means you have successfully setup the nvidia drivers and have them available to the system
 
+### Enable fan speed control and overclocking
+
+Use the `xorg.conf` that you have customized in the previous step
+
+`cat xorg.conf | sudo tee -a /etc/X11/xorg.conf`
+
+alternatively, you can generate a good starting `xorg.conf` using the following:
+
+```bash
+sudo rm rf /etc/X11/xorg.conf
+sudo nvidia-xconfig --enable-all-gpus --cool-bits=28 --allow-empty-initial-configuration
+```
+
+#### Reboot and test
+
+`nvidia-smi`
+
+```
++-----------------------------------------------------------------------------+
+| Processes:                                                       GPU Memory |
+|  GPU       PID   Type   Process name                             Usage      |
+|=============================================================================|
+|    0       542      G   /usr/lib/xorg/Xorg                            22MiB |
++-----------------------------------------------------------------------------+
+```
+
+this means you have not messed-up the xorg config and that X is still working, yay!
+
+your GPU fans should also be running as what is specified in the `rc.local` file now.
+
 ## Install nvidia-docker
 
 ### Clone the repo
-
-`git clone https://github.com/NVIDIA/nvidia-docker.git`
 
 ```bash
 distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
 curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
 curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
 sudo apt-get update && sudo apt-get install -y nvidia-container-toolkit
-sudo systemctl restart docker
 ```
+
+`sudo systemctl restart docker`
 
 ## Test GPU access from inside a container
 
 `docker run --gpus all nvidia/cuda:9.0-base nvidia-smi`
 
 You should see all your GPUs in the SMI output. This is from inside the docker container.
+
+```
+Unable to find image 'nvidia/cuda:9.0-base' locally
+9.0-base: Pulling from nvidia/cuda
+976a760c94fc: Pull complete
+c58992f3c37b: Pull complete
+0ca0e5e7f12e: Pull complete
+f2a274cc00ca: Pull complete
+708a53113e13: Pull complete
+371ddc2ca87b: Pull complete
+f81888eb6932: Pull complete
+Digest: sha256:56bfa4e0b6d923bf47a71c91b4e00b62ea251a04425598d371a5807d6ac471cb
+Status: Downloaded newer image for nvidia/cuda:9.0-base
+Sun Dec 15 20:25:16 2019
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 440.44       Driver Version: 440.44       CUDA Version: 10.2     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  GeForce GTX 1080    On   | 00000000:01:00.0  On |                  N/A |
+| 90%   27C    P8    14W / 200W |     25MiB /  8119MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+```
 
 ### Compatability update
 
