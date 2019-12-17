@@ -128,6 +128,55 @@ echo "docker:x:998:shaun" | sudo tee -a /etc/group
 
 ### logout, then log back in
 
+## Shell customizations
+
+Enable banners and color outputs
+
+`sudo apt install -y figlet lolcat`
+
+Based on what was mounted in the previous step, add something like this to your local `.bashrc`
+
+`source /media/source/techfusion.ca/ansible/.bashrc`
+
+This will enable you to control the swarm host shell defaults from a single place.
+
+do this in `/etc/skel` to automatically apply for newly created users
+
+```bash
+sed -i.bak '/media/d' ~/.bashrc && \
+echo "source /media/source/techfusion.ca/ansible/.bashrc"  >> ~/.bashrc
+```
+
+## Fake DNS
+
+### Wipe existing manual entries (optional)
+
+For example, to wipe all the `10.2.5.x` IP addresses, use:
+
+`sudo sed -i.bak '/10.2.5/d' /etc/hosts`
+
+### Create a global hosts file (optional - only for lazy / temporary DNS)
+
+Modify the provided `hosts` file and add in a list of hosts with a unique comment, so that `sed` can hook into it for easy updates later
+
+```bash
+cat "
+10.2.5.22       poseidon                  # techfusion managed
+10.2.5.201      monitoring.techfusion.ca  # techfusion managed
+10.2.5.201      registry.techfusion.ca    # techfusion managed
+" > /media/source/hosts
+```
+
+### Push the changes
+
+```text
+sudo sed -i.bak '/10.2.5/d' /etc/hosts && \
+sudo sed -i.bak '/poseidon/d' /etc/hosts && \
+sudo sed -i.bak '/techfusion/d' /etc/hosts && \
+cat /media/source/techfusion.ca/ansible/hosts | sudo tee -a /etc/hosts && \
+cat -s /etc/hosts | sudo tee /etc/hosts
+```
+
 ## Shared filesystem
 
 create some network file shares somewhere; we will use a samba-server host in this example
@@ -159,39 +208,14 @@ sudo mkdir \
 ```
 
 ```bash
-sudo sed -i.bak '/poseidon/d' /etc/hosts
-echo "10.2.5.22 poseidon" | sudo tee -a /etc/hosts
+sudo sed -i.bak '/techfusion/d' /etc/fstab && \
+sudo sed -i.bak '/poseidon/d' /etc/fstab && \
+cat -s /etc/fstab | sort | uniq | sudo tee /etc/fstab && \
+cat /media/source/techfusion.ca/ansible/fstab | sudo tee -a /etc/fstab
 ```
 
 ```bash
-#sudo sed -i.bak '/certs/d' /etc/fstab
-#sudo sed -i.bak '/Completed/d' /etc/fstab
-
-#//poseidon/techfusion/certs /media/certs cifs uid=0,username=guest,password="",iocharset=utf8,vers=3.0,noperm 0 0
-#//poseidon/Completed /media/Completed cifs uid=0,credentials=/home/shaun/.smb,uid=root,gid=root 0 0
-#//poseidon/Completed /media/Completed cifs username=Guest,password=""   0       0
-#//poseidon/Completed /media/Completed cifs guest,username=Guest,iocharset=utf8,uid=shaun,gid=docker   0 0
-
-# Clear out existing entries
-sudo sed -i.bak '/shared/d' /etc/fstab
-sudo sed -i.bak '/poseidon/d' /etc/fstab
-
-# Update fstab
-echo " \
-# Local shared filesystem (poseidon)
-//poseidon/techfusion/certs /media/certs  cifs  guest,username=Guest,iocharset=utf8,uid=shaun,gid=docker   0 0
-//poseidon/techfusion/docker  /media/docker cifs  guest,username=Guest,iocharset=utf8,uid=shaun,gid=docker   0 0
-//poseidon/techfusion/monitoring  /media/monitoring cifs  guest,username=Guest,iocharset=utf8,uid=shaun,gid=docker   0 0
-//poseidon/techfusion/registry  /media/registry cifs  guest,username=Guest,iocharset=utf8,uid=shaun,gid=docker   0 0
-//poseidon/techfusion/source  /media/source cifs  guest,username=Guest,iocharset=utf8,uid=shaun,gid=docker   0 0
-//poseidon/Completed  /media/Completed  cifs  guest,username=Guest,iocharset=utf8,uid=shaun,gid=docker   0 0
-//poseidon/Shared  /media/Shared  cifs  guest,username=Guest,iocharset=utf8,uid=shaun,gid=docker   0 0
-//poseidon/temp  /media/temp  cifs  guest,username=Guest,iocharset=utf8,uid=shaun,gid=docker   0 0
-" | \
-sudo tee -a /etc/fstab
-
 # Automount like a boss
-sudo apt install -y cifs-utils
 sudo umount -a
 sudo mount -a
 ```
@@ -223,47 +247,7 @@ reboot
 
 follow the NVIDIA build doc: ./nvidia-docker/README.md
 
-## Shell customizations
 
-Enable banners and color outputs
-
-`sudo apt install -y figlet lolcat`
-
-Based on what was mounted in the previous step, add something like this to your local `.bashrc`
-
-`source /media/source/.bashrc`
-
-This will enable you to control the swarm host shell defaults from a single place.
-
-do this in `/etc/skel` to automatically apply for newly created users
-
-## fake DNS
-
-### Wipe existing manual entries (optional)
-
-For example, to wipe all the `10.2.5.x` IP addresses, use:
-
-`sudo sed -i.bak '/10.2.5/d' /etc/hosts`
-
-### Create a global hosts file (optional - only for lazy / temporary DNS)
-
-Modify the provided `hosts` file and add in a list of hosts with a unique comment, so that `sed` can hook into it for easy updates later
-
-```bash
-cat "
-10.2.5.22       poseidon                  # techfusion managed
-10.2.5.201      monitoring.techfusion.ca  # techfusion managed
-10.2.5.201      registry.techfusion.ca    # techfusion managed
-" > /media/source/hosts
-```
-
-### Push the changes
-
-```text
-sudo sed -i.bak '/10.2.5/d' /etc/hosts
-sudo sed -i.bak '/techfusion/d' /etc/hosts
-cat /media/source/hosts | sudo tee -a /etc/hosts
-```
 
 ## Configure Docker swarm
 ### Slave Node
@@ -281,4 +265,20 @@ docker swarm join-token manager
 `docker swarm init --advertise-addr <IP>:<PORT>`
 
 
+## Troubleshooting
 
+### Emergency shell
+
+ ```bash
+ # notice how this is not alpine linux
+ docker pull debian:buster-slim
+ docker run --name shit_test --rm -i -t debian:buster-slim bash
+ ```
+
+### Restoring BASH Debian defaults
+
+```bash
+cat /dev/null > ~/.bashrc && \
+cp /etc/skel/.bashrc ~ && \
+echo "source /media/source/techfusion.ca/ansible/.bashrc"  >> ~/.bashrc
+```

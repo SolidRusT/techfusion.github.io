@@ -1,0 +1,9 @@
+# Local shared filesystem (poseidon) - v0.2
+//hades-1/techfusion/certs          /media/certs  cifs  guest,username=Guest,iocharset=utf8,uid=shaun,gid=docker   0 0
+//hades-1/techfusion/docker         /media/docker cifs  guest,username=Guest,iocharset=utf8,uid=shaun,gid=docker   0 0
+//hades-1/techfusion/monitoring     /media/monitoring cifs  guest,username=Guest,iocharset=utf8,uid=shaun,gid=docker   0 0
+//hades-1/techfusion/registry       /media/registry cifs  guest,username=Guest,iocharset=utf8,uid=shaun,gid=docker   0 0
+//hades-1/techfusion/source         /media/source cifs  guest,username=Guest,iocharset=utf8,uid=shaun,gid=docker   0 0
+//hades-1/Completed                /media/Completed  cifs  guest,username=Guest,iocharset=utf8,uid=shaun,gid=docker   0 0
+//hades-1/Shared                   /media/Shared  cifs  guest,username=Guest,iocharset=utf8,uid=shaun,gid=docker   0 0
+//hades-1/temp                     /media/temp  cifs  guest,username=Guest,iocharset=utf8,uid=shaun,gid=docker   0 0
