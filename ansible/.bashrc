@@ -12,11 +12,11 @@ function friend {
     ssh -tq -o ConnectTimeout=5 $friend $command
     echo
   done
-  # Run the command locally
-  echo $(hostname) | figlet | lolcat
-  echo -e "\e[1mChatting with myself, about $command\e[0m"
-  $command
-  echo && echo
+  # Run the command locally (BROKEN)
+  #echo $(hostname) | figlet | lolcat
+  #echo -e "\e[1mChatting with myself, about $command\e[0m"
+  #$command
+  #echo && echo
 }
 
 # Discover active swarm node type
@@ -82,7 +82,7 @@ echo "uptime is $( uptime )"
 uname -a | lolcat
 echo "date   is $( date   )"
 echo
-df -h | grep -E 'techfusion|sda' | awk -v OFS='\t' '{print $5, $2, $1}' | lolcat
+df -h | grep -E 'techfusion|sd|md|mmc' | awk -v OFS='\t' '{print $5, $2, $1}' | lolcat
 echo
 
 # Enable some shell aliases

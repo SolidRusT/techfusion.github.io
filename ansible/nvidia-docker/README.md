@@ -7,7 +7,7 @@
 ```bash
 sudo dpkg --add-architecture i386
 sudo apt-get update && sudo apt-get dist-upgrade -y
-sudo apt install -y build-essential libc6:i386 git wget curl net-tools libc-ares2
+sudo apt install -y build-essential libc6:i386 git wget curl net-tools
 ```
 
 ### generate link from http://www.nvidia.com/Download/index.aspx
@@ -216,3 +216,19 @@ echo "deb http://security.debian.org/debian-security stretch/updates main" | sud
 sudo apt update && sudo apt-get install libssl1.0.2 screen linux-headers-$(uname -r)
 ```
 
+[Awesome Miner Linux](https://support.awesomeminer.com/support/solutions/articles/35000086210-remote-agent-for-linux)
+
+```bash
+sudo apt install bash screen libc-ares2
+wget http://www.awesomeminer.com/download/setup/awesomeminer-remoteagent.tar.xz
+tar xvJf awesomeminer-remoteagent.tar.xz
+cd awesomeminer-remoteagent
+sudo ./service-install.sh
+./AwesomeMiner.RemoteAgent.Linux /setpassword=SomePassword123
+sudo reboot
+```
+
+```bash
+# autoclean dead screens
+echo "*  *    * * *   root    screen -wipe" | sudo tee -a /etc/crontab
+```

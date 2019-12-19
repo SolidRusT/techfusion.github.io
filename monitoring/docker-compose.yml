@@ -5,26 +5,6 @@ networks:
     driver: overlay
     attachable: true
 
-volumes:
-    prometheus:
-      driver: local
-      driver_opts:
-        type: none
-        o: bind
-        device: "/media/monitoring/prometheus"
-    grafana:
-      driver: local
-      driver_opts:
-        type: none
-        o: bind
-        device: "/media/monitoring/graphana"
-    alertmanager:
-      driver: local
-      driver_opts:
-        type: none
-        o: bind
-        device: "/media/monitoring/alertmanager"
-
 configs:
   caddy_config:
     file: ./caddy/Caddyfile
@@ -88,7 +68,7 @@ services:
       #- GF_SMTP_USER=${GF_SMTP_USER}
       #- GF_SMTP_PASSWORD=${GF_SMTP_PASSWORD}
     volumes:
-      - grafana:/var/lib/grafana
+      - /media/monitoring/graphana:/var/lib/grafana
     deploy:
       mode: replicated
       replicas: 1
@@ -113,7 +93,7 @@ services:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
       - '--storage.path=/alertmanager'
     volumes:
-      - alertmanager:/alertmanager
+      - /media/monitoring/alertmanager:/alertmanager
     deploy:
       mode: replicated
       replicas: 1
@@ -170,7 +150,7 @@ services:
       - '--storage.tsdb.path=/prometheus'
       - '--storage.tsdb.retention=${PROMETHEUS_RETENTION:-24h}'
     volumes:
-      - prometheus:/prometheus
+      - /media/monitoring/prometheus:/prometheus
     configs:
       - source: node_rules
         target: /etc/prometheus/swarm_node.rules.yml

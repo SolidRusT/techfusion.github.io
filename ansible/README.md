@@ -62,10 +62,6 @@ ssh -tq <new_host> "mkdir .ssh"
 scp ~/.ssh/authorized_keys <new_host>:~/.ssh/`
 ```
 
-### Set the timezone (not required for official images)
-
-`sudo ln -s /usr/share/zoneinfo/America/Vancouver /etc/localtime`
-
 ## Install Docker
 
 ### Configure dependencies
@@ -81,24 +77,24 @@ sudo apt install -y \
 ```
 
 ### Get the Docker signing key for packages
-`curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | sudo apt-key add -`
 
 - most instances use 'arch=amd64'
 - rasbian uses 'arch=armhf'
 
 ```bash
+curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | sudo apt-key add -
 echo "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
      $(lsb_release -cs) stable" | \
     sudo tee /etc/apt/sources.list.d/docker.list
 ```
 
-#### The aufs package, part of the "recommended" packages, won't install on Buster just yet, because of missing pre-compiled kernel modules.
-
-#### We can work around that issue by using "--no-install-recommends"
+- The aufs package, part of the "recommended" packages, won't install on rasbian Buster just yet, because of missing pre-compiled kernel modules.
+- a work around for that issue is using "--no-install-recommends"
+- works fine on x86_64 debian 10 buster
 
 ```bash
 sudo apt update
-sudo apt install -y --no-install-recommends \
+sudo apt install -y \
     docker-ce \
     cgroupfs-mount
 ```
@@ -127,25 +123,6 @@ echo "docker:x:998:shaun" | sudo tee -a /etc/group
 ```
 
 ### logout, then log back in
-
-## Shell customizations
-
-Enable banners and color outputs
-
-`sudo apt install -y figlet lolcat`
-
-Based on what was mounted in the previous step, add something like this to your local `.bashrc`
-
-`source /media/source/techfusion.ca/ansible/.bashrc`
-
-This will enable you to control the swarm host shell defaults from a single place.
-
-do this in `/etc/skel` to automatically apply for newly created users
-
-```bash
-sed -i.bak '/media/d' ~/.bashrc && \
-echo "source /media/source/techfusion.ca/ansible/.bashrc"  >> ~/.bashrc
-```
 
 ## Fake DNS
 
@@ -222,6 +199,25 @@ sudo mount -a
 
 `friend "echo \"*  *    * * *   root    mount -a\" | sudo tee -a /etc/crontab"`
 
+## Shell customizations
+
+Enable banners and color outputs
+
+`sudo apt install -y figlet lolcat`
+
+Based on what was mounted in the previous step, add something like this to your local `.bashrc`
+
+`source /media/source/techfusion.ca/ansible/.bashrc`
+
+This will enable you to control the swarm host shell defaults from a single place.
+
+do this in `/etc/skel` to automatically apply for newly created users
+
+```bash
+sed -i.bak '/media/d' ~/.bashrc && \
+echo "source /media/source/techfusion.ca/ansible/.bashrc"  >> ~/.bashrc
+```
+
 ## VirtualBox Guest Addtitions (OPTIONAL)
 
 If you are doing this in a VirtualBox guest only
@@ -264,6 +260,9 @@ docker swarm join-token manager
 #### Initialize the swarm
 `docker swarm init --advertise-addr <IP>:<PORT>`
 
+## registry login
+
+`docker login registry.techfusion.ca:5000`
 
 ## Troubleshooting
 
