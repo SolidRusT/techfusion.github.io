@@ -12,11 +12,6 @@ function friend {
     ssh -tq -o ConnectTimeout=5 $friend $command
     echo
   done
-  # Run the command locally (BROKEN)
-  #echo $(hostname) | figlet | lolcat
-  #echo -e "\e[1mChatting with myself, about $command\e[0m"
-  #$command
-  #echo && echo
 }
 
 # Discover active swarm node type

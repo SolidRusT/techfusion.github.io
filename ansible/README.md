@@ -1,21 +1,17 @@
-## TODO - setup ansible
-
-### Cheaty little function until we do Ansible
+## Setup ansible
 
 ```bash
-FRIENDS=(blaze kolvicy godberry poseidon hades)
+echo "deb http://ppa.launchpad.net/ansible/ansible/ubuntu bionic main" | sudo tee -a /etc/apt/sources.list
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367
+sudo apt update && sudo apt install ansible -y
 
-function friend {
-  for friend in ${FRIENDS[@]}; do
-    echo "Chatting with: $friend, about $1"
-    ssh -tq $friend "$1"
-  done
-  echo "Chatting with: $(hostname), about $1"
-  $1
-}
-
-alias src='cd /media/source'
+ssh-keygen
+ssh-copy-id root@<host>
 ```
+
+cp ansible.cfg /etc/ansible/
+ansible -m ping docker
+ansible -m shell -a "docker ps" docker
 
 
 ## Debian Buster steps
