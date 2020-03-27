@@ -129,8 +129,9 @@ Don't worry if the above doesn't work, you can avoid docker-compose in most scen
 ### make yourself a member of the docker group
 
 ```bash
-sudo sed -i.bak '/docker/d' /etc/group
-echo "docker:x:998:shaun" | sudo tee -a /etc/group
+sudo groupadd docker
+sudo usermod -aG docker shaun
+sudo service docker restart
 ```
 
 ### logout, then log back in
