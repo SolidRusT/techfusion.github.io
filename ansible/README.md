@@ -107,9 +107,24 @@ sudo systemctl start docker
 
 ```bash
 sudo apt update && \
-  sudo apt install -y python python-pip libffi-dev python-backports.ssl-match-hostname && \
-  sudo pip install docker-compose
+  sudo apt install -y python python-pip 
 ```
+
+If `python-pip` is not avalable, try as a normal user first:
+
+```bash
+wget https://bootstrap.pypa.io/get-pip.py
+python get-pip.py
+```
+
+### logout, then log back in
+
+```bash
+sudo apt install -y python libffi-dev && \
+  pip install docker-compose
+```
+
+Don't worry if the above doesn't work, you can avoid docker-compose in most scenarios
 
 ### make yourself a member of the docker group
 
