@@ -1,8 +1,6 @@
-data "aws_canonical_user_id" "current_user" {}
-
-resource "aws_s3_bucket" "s3_bucket" {
+module "s3_bucket" {
+  source = "terraform-aws-modules/s3-bucket/aws"
   count = var.create_bucket ? 1 : 0
-
   bucket              = var.bucket
   bucket_prefix       = var.bucket_prefix
   acl                 = var.acl
