@@ -8,9 +8,9 @@ resource "aws_s3_bucket" "s3_bucket" {
   force_destroy       = var.force_destroy
   acceleration_status = var.acceleration_status
 
-  tags = merge(var.common_tags, map(
-    "Name", var.bucket
-  ))
+  tags = merge(var.common_tags, tomap({
+    "Name" = var.bucket
+  }))
 
   dynamic "lifecycle_rule" {
     for_each = var.lifecycle_rule

@@ -9,9 +9,9 @@ resource "aws_s3_bucket" "s3_bucket" {
   force_destroy       = var.force_destroy
   acceleration_status = var.acceleration_status
 
-  tags = merge(var.common_tags, map(
-    "Name", var.bucket
-  ))
+  tags = merge(var.common_tags, tomap({
+    "Name" = var.bucket
+  }))
 
   dynamic "website" {
     for_each = length(keys(var.website)) == 0 ? [] : [var.website]
