@@ -18,11 +18,11 @@ data "aws_iam_session_context" "current" {
   arn = data.aws_caller_identity.current.arn
 }
 
-# Certificate Manager
-provider "aws" {
-  alias  = "acm"
-  region = "us-east-1"
-}
+## Certificate Manager
+#provider "aws" {
+#  alias  = "acm"
+#  region = "us-east-1"
+#}
 
 # Project settings
 variable "env" {

@@ -35,10 +35,10 @@ module "main_s3" {
     error_document = "shit.html"
 
   }
-  logging = {
-    target_bucket = module.logging_s3.s3_bucket_id
-    target_prefix = "${var.project}-${var.env}"
-  }
+  #logging = {
+  #  target_bucket = module.logging_s3.s3_bucket_id
+  #  target_prefix = "${var.project}-${var.env}"
+  #}
   server_side_encryption_configuration = {
     rule = {
       apply_server_side_encryption_by_default = {
@@ -47,33 +47,33 @@ module "main_s3" {
     }
   }
   common_tags = local.common_tags
-  depends_on = [
-    module.logging_s3,
-  ]
+  #depends_on = [
+  #  module.logging_s3,
+  #]
 }
 
-# main web logs storage
-module "logging_s3" {
-  source        = "./modules/s3-logs"
-  env           = var.env
-  project       = var.project
-  region        = var.region
-  bucket        = "${var.storage_s3}-logs"
-  force_destroy = true
-  website = {
-    index_document = "index.html"
-    error_document = "shit.html"
-
-  }
-  server_side_encryption_configuration = {
-    rule = {
-      apply_server_side_encryption_by_default = {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-  common_tags = local.common_tags
-}
+## main web logs storage
+#module "logging_s3" {
+#  source        = "./modules/s3-logs"
+#  env           = var.env
+#  project       = var.project
+#  region        = var.region
+#  bucket        = "${var.storage_s3}-logs"
+#  force_destroy = true
+#  website = {
+#    index_document = "index.html"
+#    error_document = "shit.html"
+#
+#  }
+#  server_side_encryption_configuration = {
+#    rule = {
+#      apply_server_side_encryption_by_default = {
+#        sse_algorithm = "AES256"
+#      }
+#    }
+#  }
+#  common_tags = local.common_tags
+#}
 
 ## main SSL Certificate
 #resource "aws_acm_certificate" "cert" {
