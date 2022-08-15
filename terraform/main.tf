@@ -10,7 +10,7 @@ locals{
   
   # Global tags
   common_tags = {
-    Project     = local.project
+    Project     = var.project
     Environment = var.env
     CreatedBy   = "Terraform"
     Terraform   = true
@@ -24,7 +24,7 @@ module "main_s3" {
   env           = var.env
   project       = var.project
   region        = var.region
-  bucket        = var.storage_s3
+  bucket        = local.storage_s3
   acl           = "public-read"
   force_destroy = true
   versioning = {
@@ -58,7 +58,7 @@ module "main_s3" {
 #  env           = var.env
 #  project       = var.project
 #  region        = var.region
-#  bucket        = "${var.storage_s3}-logs"
+#  bucket        = "${local.storage_s3}-logs"
 #  force_destroy = true
 #  website = {
 #    index_document = "index.html"
