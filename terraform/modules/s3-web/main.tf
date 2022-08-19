@@ -6,37 +6,21 @@ module "s3_bucket" {
   acl                 = var.acl
   force_destroy       = var.force_destroy
   acceleration_status = var.acceleration_status
+  website = var.website
+  versioning = var.versioning
 
   tags = merge(var.common_tags, tomap({
     "Name" = var.bucket
   }))
 
-  dynamic "website" {
-    for_each = length(keys(var.website)) == 0 ? [] : [var.website]
-
-    content {
-    index_document = lookup(website.value, "index_document", null)
-    error_document = lookup(website.value, "error_document", null)
-    }
-  }
-
-  dynamic "versioning" {
-    for_each = length(keys(var.versioning)) == 0 ? [] : [var.versioning]
-
-    content {
-      enabled    = lookup(versioning.value, "enabled", null)
-      mfa_delete = lookup(versioning.value, "mfa_delete", null)
-    }
-  }
-
-  dynamic "logging" {
-    for_each = length(keys(var.logging)) == 0 ? [] : [var.logging]
-
-    content {
-      target_bucket = logging.value.target_bucket
-      target_prefix = lookup(logging.value, "target_prefix", null)
-    }
-  }
+  #dynamic "logging" {
+  #  for_each = length(keys(var.logging)) == 0 ? [] : [var.logging]
+  #
+  #  content {
+  #    target_bucket = logging.value.target_bucket
+  #    target_prefix = lookup(logging.value, "target_prefix", null)
+  #  }
+  #}
 
   dynamic "lifecycle_rule" {
     for_each = var.lifecycle_rule

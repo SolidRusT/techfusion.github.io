@@ -19,8 +19,8 @@ locals{
 }
 
 # main web content storage
-module "main_s3" {
-  source        = "./modules/s3"
+module "web_storage" {
+  source        = "./modules/s3-web"
   env           = var.env
   project       = var.project
   region        = var.region

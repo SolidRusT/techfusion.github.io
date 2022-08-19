@@ -66,11 +66,11 @@ variable "versioning" {
   default     = {}
 }
 
-variable "logging" {
-  description = "Map containing access bucket logging configuration."
-  type        = map(string)
-  default     = {}
-}
+#variable "logging" {
+#  description = "Map containing access bucket logging configuration."
+#  type        = map(string)
+#  default     = {}
+#}
 
 variable "lifecycle_rule" {
   description = "List of maps containing configuration of object lifecycle management."
