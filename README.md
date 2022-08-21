@@ -1,30 +1,70 @@
-## Technical Fusion Canada
+# Getting Started with Create React App
 
-### techfusion.ca core operations
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-The `master` branch contains the code installed on [www.techfusion.ca](https://www.techfusion.ca).
+## Available Scripts
 
-## Disaster Recovery steps
+In the project directory, you can run:
 
-- make a gmail account, to use as emergency admin
-- enable email, SMS or Device-based authentication for gmail
-- create authy account to use as an MFA token for AWS
-- create new AWS account using emergency admin user
-- create authy account
+### `npm start`
 
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
 
-## References
-- https://github.com/vegasbrianc/prometheus
-- https://github.com/RiFi2k/dockerize-your-dev
-- https://thenewstack.io/how-firecracker-is-going-to-set-modern-infrastructure-on-fire/
-- https://docs.gluster.org/en/latest/Install-Guide/Install/
-- http://cowlet.org/2018/05/21/accessing-gpus-from-a-docker-swarm-service.html
+### `npm test`
 
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### other considerations
-- https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/useconsolidatedbilling-procedure.html
-- https://console.aws.amazon.com/organizations/home?region=us-west-2#/accounts
-- https://aws.amazon.com/blogs/security/how-to-set-up-federated-single-sign-on-to-aws-using-google-apps/
-- https://console.aws.amazon.com/iam/home?region=us-west-2#/providers/arn:aws:iam::104898175576:saml-provider/GoogleApps
-- https://console.aws.amazon.com/iam/home?region=us-west-2#/roles/techfusion-gsuite
+### `npm run build`
+
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+### `npm run eject`
+
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Code Splitting
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+
+### Analyzing the Bundle Size
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
