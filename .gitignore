@@ -18,3 +18,4 @@ git.log
 *.crt
 *.key
 
+*.min.js
