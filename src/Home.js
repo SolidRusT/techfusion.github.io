@@ -1,5 +1,5 @@
 import React from 'react';
-import { GitHub, Zap, Printer3d, Car, Code } from 'lucide-react';
+import { Github, Zap, Printer, Car, Code } from 'lucide-react';
 
 const Home = () => {
   return (
@@ -8,7 +8,7 @@ const Home = () => {
         <h1 className="text-2xl font-bold">Technical Fusion Canada</h1>
         <nav>
           <a href="https://github.com/SolidRusT/techfusion.github.io" className="ml-4 hover:text-green-300">
-            <GitHub className="inline mr-1" />
+            <Github className="inline mr-1" size={24} />
             GitHub
           </a>
         </nav>
@@ -31,7 +31,7 @@ const Home = () => {
             </div>
           </div>
           <div className="bg-green-700 p-6 rounded-lg shadow-lg flex items-center">
-            <Printer3d className="text-blue-400 mr-4" size={48} />
+            <Printer className="text-blue-400 mr-4" size={48} />
             <div>
               <h3 className="text-2xl font-semibold mb-2">3D Printing</h3>
               <p>Bringing ideas to life with cutting-edge 3D printing technology.</p>
@@ -62,7 +62,7 @@ const Home = () => {
           <div>
             <a href="https://solidrust.net" className="text-green-300 hover:underline mr-4">SolidRusT Networks</a>
             <a href="https://github.com/SolidRusT/" className="text-green-300 hover:underline">
-              <GitHub className="inline mr-1" />
+              <Github className="inline mr-1" size={24} />
               GitHub Organization
             </a>
           </div>
