@@ -4,10 +4,15 @@ const autoprefixer = require('autoprefixer');
 module.exports = {
   style: {
     postcss: {
-      plugins: [
-        tailwindcss('./tailwind.config.js'),
-        autoprefixer,
-      ],
+      loaderOptions: (postcssLoaderOptions) => {
+        postcssLoaderOptions.postcssOptions = {
+          plugins: [
+            tailwindcss('./tailwind.config.js'),
+            autoprefixer,
+          ],
+        };
+        return postcssLoaderOptions;
+      },
     },
   },
-}
+};

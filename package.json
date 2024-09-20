@@ -20,8 +20,7 @@
     "test": "craco test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build --dotfiles",
-    "postinstall": "tailwindcss build -i ./src/index.css -o ./src/tailwind.output.css"
+    "deploy": "gh-pages -d build --dotfiles"
   },
   "eslintConfig": {
     "extends": [

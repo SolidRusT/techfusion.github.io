@@ -47,6 +47,7 @@ extensions=(
     .tsx
     .js
     .jsx
+    .yml
     .babelrc
     robots.txt
     sitemap.xml
