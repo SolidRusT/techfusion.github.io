@@ -76,4 +76,5 @@ rm -rf node_modules
 rm -rf build
 npm cache clean --force
 npm install
+npx npm-check-updates -u
 ```
