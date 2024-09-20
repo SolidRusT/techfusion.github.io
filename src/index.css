@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Force Tailwind to include all styles */
+@layer utilities {
+  .all-classes {
+    @apply 
+      p-4 m-4 
+      text-sm text-lg text-xl text-2xl
+      font-bold font-semibold
+      bg-green-100 bg-green-200 bg-green-300 bg-green-400 bg-green-500 bg-green-600 bg-green-700 bg-green-800 bg-green-900
+      text-white text-black
+      rounded-lg shadow-lg
+      flex flex-col items-center justify-between
+      grid grid-cols-1 md:grid-cols-2
+      hover:bg-green-600 hover:text-white
+      transition duration-300;
+  }
+}
